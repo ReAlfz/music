@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "1086061536266",
+    "project_id": "semester4-1839f",
+    "storage_bucket": "semester4-1839f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1086061536266:android:ce206de4a947f3a46aebf3",
+        "android_client_info": {
+          "package_name": "realfz.umm.modul1.modul1"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1086061536266-38uqn14qgt3a2eh3sp0j8mgv7cehsl48.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDeC0Ur2QJBnmQCNOgafOVzWrvShEFC9m8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1086061536266-38uqn14qgt3a2eh3sp0j8mgv7cehsl48.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1086061536266-d5lrlf4k0dms3aqucpu87475iibomq1d.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "realfz.umm.modul1.modul1"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
