@@ -147,4 +147,10 @@ class _Sign extends State<Sign> {
       ),
     );
   }
+
+  dispose() {
+    username.dispose();
+    password.dispose();
+    super.dispose();
+  }
 }

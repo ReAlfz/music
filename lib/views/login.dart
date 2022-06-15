@@ -1,13 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:modul1/helper/services.dart';
+import 'package:modul1/helper/transition.dart';
 import 'package:modul1/main.dart';
 import 'package:modul1/views/sign.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class Login extends StatefulWidget {
   _Login createState() => _Login();
@@ -16,35 +13,6 @@ class Login extends StatefulWidget {
 class _Login extends State<Login> {
   TextEditingController username = TextEditingController();
   TextEditingController password = TextEditingController();
-
-  initState() {
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      print('= ${message.notification?.body}');
-      RemoteNotification? notification = message.notification;
-      AndroidNotification? android = message.notification?.android;
-      if (notification != null && android != null && !kIsWeb) {
-        flutterLocalNotificationsPlugin.show(
-          notification.hashCode,
-          notification.title,
-          notification.body,
-          NotificationDetails(
-            android: AndroidNotificationDetails(
-              channel.id,
-              channel.name,
-              channelDescription: channel.description,
-              icon: 'launch_background',
-            ),
-          ),
-        );
-      }
-    });
-
-    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) async {
-      await launchUrl(Uri.parse('google.com'));
-      print('A new onMessageOpenedApp event was published!');
-    });
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -153,8 +121,8 @@ class _Login extends State<Login> {
                       AuthServices services = AuthServices(FirebaseAuth.instance);
                       if (await services.logIn(email: username.text, password: password.text)) {
                         Navigator.of(context).push(
-                            MaterialPageRoute(builder: (context) => MyHomePage()
-                            ));
+                          SlideUpTransition(page: MyHomePage())
+                        );
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
@@ -212,5 +180,11 @@ class _Login extends State<Login> {
         ],
       ),
     );
+  }
+
+  dispose() {
+    username.dispose();
+    password.dispose();
+    super.dispose();
   }
 }

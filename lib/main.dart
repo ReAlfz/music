@@ -4,105 +4,33 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:modul1/helper/model.dart';
 import 'package:modul1/views/account.dart';
 import 'package:modul1/views/home.dart';
 import 'package:modul1/views/library.dart';
-import 'package:modul1/views/login.dart';
 import 'package:modul1/views/search.dart';
+import 'package:provider/provider.dart';
 
-import 'helper/firebase_options.dart';
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-  FirebaseMessaging.instance.getToken().then((value) => print(value));
-
-  if (!kIsWeb) {
-    channel = const AndroidNotificationChannel(
-      'high_importance_channel', // id
-      'High Importance Notifications', // title
-      description: 'This channel is used for important notifications.', // description
-      importance: Importance.high,
-    );
-
-    flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
-    await flutterLocalNotificationsPlugin
-        .resolvePlatformSpecificImplementation<
-        AndroidFlutterLocalNotificationsPlugin>()
-        ?.createNotificationChannel(channel);
-
-    await FirebaseMessaging.instance
-        .setForegroundNotificationPresentationOptions(
-      alert: true,
-      badge: true,
-      sound: true,
-    );
-  }
-
+void main() {
   runApp(MyApp());
-}
-
-late AndroidNotificationChannel channel;
-late FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
-Future _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  print('Handling a background message ${message.messageId}');
 }
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Spotify',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: FutureBuilder<Map<String, dynamic>>(
-        future: alreadyLogin(context),
-        builder: (context, condition) {
-          switch (condition.connectionState) {
-            case ConnectionState.done:
-              if (condition.hasData) {
-                return MyHomePage();
-              } else {
-                return Login();
-              }
-            default:
-              return Material(
-                color: Colors.transparent,
-                child: Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [Color(0xff96979C), Color(0xff636669), Color(0xff25252D)],
-                        stops: [0.2, 0.5, 0.8]
-                    ),
-                  ),
-                  child: Center(
-                    child: Image(
-                      image: AssetImage('assets/spotify.png'),
-                      width: 200,
-                      height: 200,
-                    ),
-                  ),
-                ),
-              );
-          }
-        },
+    return ChangeNotifierProvider<LibraryServices>(
+      create: (context) => LibraryServices(),
+      child: MaterialApp(
+        title: 'Spotify',
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+        ),
+        home: MyHomePage(),
       ),
     );
-  }
-
-  Future<Map<String, dynamic>> alreadyLogin(context) async {
-    precacheImage(Image.asset('assets/spotify.png').image, context);
-    Map<String, dynamic> data = jsonDecode(await ShareInit().read('user'));
-    return data;
   }
 }
 

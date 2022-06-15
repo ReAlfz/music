@@ -116,17 +116,6 @@ class _sideDetail extends State<SideDetail> {
                                 ],
                               ),
                             ),
-
-                            Flexible(
-                              fit: FlexFit.tight,
-                              flex: 1,
-                              child: IconButton(
-                                icon: Icon(
-                                  Icons.favorite_border_outlined,
-                                ),
-                                onPressed: () {},
-                              ),
-                            ),
                           ],
                         ),
                       );
