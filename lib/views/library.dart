@@ -14,8 +14,9 @@ class Library extends StatefulWidget {
 }
 
 class _Library extends State<Library> {
-  bool _searching = false;
-  void _doSearching() => setState(() => _searching = !_searching);
+  bool searchMode = false;
+  String query = "";
+  late TextEditingController _textEditingController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -35,179 +36,235 @@ class _Library extends State<Library> {
         ),
 
         child: SingleChildScrollView(
-          child: Column(
-            children: [
-              Stack(
+          child: Consumer<LibraryServices>(
+            builder: (context, services, child) {
+              List<Songs> _list = (query.isEmpty)
+                  ? services.defaultList
+                  : services.defaultList.where(
+                      (element) => element.title.toLowerCase().contains(query)
+              ).toList();
+              return Column(
                 children: [
-                  Positioned(
-                    right: 0,
-                    top: 0,
-                    child: IconButton(
-                      onPressed: _doSearching,
-                      icon: Icon(
-                        Icons.search,
-                        size: 27.5,
-                        color: Colors.grey[200],
-                      ),
-                    ),
-                  ),
+                  Container(
+                    padding: EdgeInsets.only(top: 12.5, bottom: 10),
+                    height: medias.size.height * 0.1,
+                    child: Stack(
+                      children: [
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: AnimatedOpacity(
+                            duration: Duration(milliseconds: 500),
+                            opacity: (searchMode) ? 0 : 1,
+                            child: Text(
+                              "Your Library",
+                              style: TextStyle(
+                                fontSize: 25,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ),
 
-                  AnimatedContainer(
-                    width: _searching ? 0 : medias.size.width,
-                    transform: Matrix4.translationValues(_searching ? medias.size.width : 0, 0, 0),
-                    duration: const Duration(seconds: 1),
-                    height: kToolbarHeight * 0.8,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(15.0),
-                      border: Border.all(
-                        width: 1,
-                        color: Colors.grey[600]!,
-                      ),
-                    ),
-                    child: TextField(
-                      textInputAction: TextInputAction.search,
-                      decoration: InputDecoration(
-                          prefixIcon: AnimatedOpacity(
-                              duration: const Duration(seconds: 1),
-                              opacity: _searching ? 0 : 1,
-                              child: IconButton(
-                                icon: const Icon(Icons.arrow_back_ios),
-                                onPressed: _doSearching,
-                              )),
-                          border: InputBorder.none),
-                    ),
-                  ),
-                ],
-              ),
-
-              FutureBuilder<List<User>>(
-                future: load(),
-                builder: (context, snapshot) {
-                  return Consumer<LibraryServices>(
-                    builder: (context, services, child) {
-                      services.defaultList = snapshot.data ?? [];
-                      return ListView.builder(
-                        padding: EdgeInsets.zero,
-                        shrinkWrap: true,
-                        physics: NeverScrollableScrollPhysics(),
-                        itemCount: services.defaultList.length,
-                        itemBuilder: (context, index) {
-                          return GestureDetector(
-                            onTap: () {
-                              Navigator.of(context).push(
-                                  FadeTransitioned(page: Details(
-                                    onNext: widget.onNext,
-                                    index: index,
-                                    listOther: services.defaultList,
-                                  ))
-                              );
-                            },
-
-                            child: Container(
-                              margin: EdgeInsets.symmetric(horizontal: 2.5, vertical: 5),
-                              padding: EdgeInsets.only(right: 15),
-                              height: medias.size.height * 0.12,
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: AnimatedContainer(
+                            duration: Duration(milliseconds: 500),
+                            width: (searchMode) ? medias.size.width : 50,
+                            height: 48,
+                            curve: Curves.easeInOut,
+                            child: (searchMode)
+                                ? AnimatedContainer(
+                              duration: Duration(milliseconds: 300),
+                              alignment: Alignment.centerRight,
+                              height: 48,
                               decoration: BoxDecoration(
-                                color: Colors.grey,
-                                borderRadius: BorderRadius.circular(10),
+                                  color: (searchMode) ? Colors.grey[200] : Colors.transparent,
+                                  borderRadius: BorderRadius.circular(10)
                               ),
                               child: Row(
                                 children: [
                                   Flexible(
+                                    flex: 9,
                                     fit: FlexFit.tight,
-                                    flex: 2,
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.only(
-                                        topLeft: Radius.circular(10),
-                                        bottomLeft: Radius.circular(10),
-                                      ),
-                                      child: Image(
-                                        fit: BoxFit.cover,
-                                        image: NetworkImage(services.defaultList[index].image),
-                                        height: medias.size.height,
-                                        width: medias.size.width,
-                                      ),
-                                    ),
-                                  ),
-
-                                  Flexible(
-                                    fit: FlexFit.tight,
-                                    flex: 7,
-                                    child: Column(
-                                      children: [
-                                        Flexible(
-                                          fit: FlexFit.tight,
-                                          flex: 5,
-                                          child: Container(
-                                            alignment: Alignment.bottomLeft,
-                                            padding: EdgeInsets.only(bottom: 5, left: 12.5),
-                                            child: Text(
-                                              services.defaultList[index].title,
-                                              overflow: TextOverflow.ellipsis,
-                                              style: TextStyle(
-                                                fontSize: 18,
-                                                color: Colors.black,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-
-                                        Flexible(
-                                          fit: FlexFit.tight,
-                                          flex: 5,
-                                          child: Container(
-                                            alignment: Alignment.topLeft,
-                                            padding: EdgeInsets.only(top: 5, left: 12.5),
-                                            child: Text(
-                                              services.defaultList[index].artist,
-                                              style: TextStyle(
-                                                fontSize: 18,
-                                                color: Colors.black,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-
-                                  Flexible(
-                                    fit: FlexFit.tight,
-                                    flex: 1,
-                                    child: IconButton(
-                                      icon: Icon(
-                                        Icons.favorite,
-                                        color: Colors.red,
-                                      ),
-                                      onPressed: () {
-                                        services.deleteListener(services.defaultList[index], context);
+                                    child: TextField(
+                                      textInputAction: TextInputAction.done,
+                                      autofocus: false,
+                                      controller: _textEditingController,
+                                      onChanged: (String text) {
+                                        setState(() {
+                                          query = text.toLowerCase();
+                                        });
                                       },
+                                      decoration: InputDecoration(
+                                        hintText: 'Search video here...',
+                                        hintStyle: TextStyle(
+                                          fontSize: 18,
+                                          color: Colors.grey,
+                                        ),
+                                        contentPadding: EdgeInsets.symmetric(horizontal: 15, vertical: 1.5),
+                                        border: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(10),
+                                          borderSide: BorderSide.none,
+                                        ),
+                                      ),
                                     ),
+                                  ),
+                                  IconButton(
+                                    icon: Icon(
+                                        Icons.clear
+                                    ),
+                                    onPressed: () {
+                                      setState(() {
+                                        searchMode = false;
+                                        _textEditingController.clear();
+                                        query = "";
+                                      });
+                                    },
                                   ),
                                 ],
                               ),
+                            )
+                                : AnimatedContainer(
+                              duration: Duration(milliseconds: 300),
+                              alignment: Alignment.centerRight,
+                              height: 48,
+                              decoration: BoxDecoration(
+                                color: (searchMode) ? Colors.transparent : Colors.grey[200],
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: IconButton(
+                                icon: Icon(
+                                  Icons.search,
+                                  color: Colors.black,
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    searchMode = true;
+                                  });
+                                },
+                              ),
                             ),
-                          );
-                        },
-                      );
-                    },
-                  );
-                },
-              ),
-            ],
-          ),
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+
+                  Divider(color: Colors.white70, height: 1.5),
+
+                  Padding(
+                    padding: EdgeInsets.only(top: 15),
+                    child: ListView.builder(
+                      padding: EdgeInsets.zero,
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      itemCount: _list.length,
+                      itemBuilder: (context, index) {
+                        return GestureDetector(
+                          onTap: () {
+                            Navigator.of(widget.onNext).push(
+                                FadeTransitioned(page: Details(
+                                  onNext: widget.onNext,
+                                  index: index,
+                                  listOther: services.defaultList,
+                                ))
+                            );
+                          },
+
+                          child: Container(
+                            margin: EdgeInsets.symmetric(horizontal: 2.5, vertical: 5),
+                            padding: EdgeInsets.only(right: 15),
+                            height: medias.size.height * 0.12,
+                            decoration: BoxDecoration(
+                              color: Colors.grey,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Row(
+                              children: [
+                                Flexible(
+                                  fit: FlexFit.tight,
+                                  flex: 2,
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.only(
+                                      topLeft: Radius.circular(10),
+                                      bottomLeft: Radius.circular(10),
+                                    ),
+                                    child: Image(
+                                      fit: BoxFit.cover,
+                                      image: NetworkImage(_list[index].imageUrl),
+                                      height: medias.size.height,
+                                      width: medias.size.width,
+                                    ),
+                                  ),
+                                ),
+
+                                Flexible(
+                                  fit: FlexFit.tight,
+                                  flex: 7,
+                                  child: Column(
+                                    children: [
+                                      Flexible(
+                                        fit: FlexFit.tight,
+                                        flex: 5,
+                                        child: Container(
+                                          alignment: Alignment.bottomLeft,
+                                          padding: EdgeInsets.only(bottom: 5, left: 12.5),
+                                          child: Text(
+                                            _list[index].title,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: TextStyle(
+                                              fontSize: 18,
+                                              color: Colors.black,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+
+                                      Flexible(
+                                        fit: FlexFit.tight,
+                                        flex: 5,
+                                        child: Container(
+                                          alignment: Alignment.topLeft,
+                                          padding: EdgeInsets.only(top: 5, left: 12.5),
+                                          child: Text(
+                                            _list[index].title,
+                                            style: TextStyle(
+                                              fontSize: 18,
+                                              color: Colors.black,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+
+                                Flexible(
+                                  fit: FlexFit.tight,
+                                  flex: 1,
+                                  child: IconButton(
+                                    icon: Icon(
+                                      Icons.favorite,
+                                      color: Colors.red,
+                                    ),
+                                    onPressed: () {
+                                      services.deleteListener(services.defaultList[index], context);
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              );
+            },
+          )
         ),
       ),
     );
-  }
-
-  Future<List<User>> load() async {
-    try {
-      return User.decodeData(await ShareInit().read('list'));
-    } catch (e) {
-      print('failed because $e');
-      return [];
-    }
   }
 }

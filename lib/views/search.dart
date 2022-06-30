@@ -4,7 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:modul1/detail.dart';
 import 'package:modul1/helper/model.dart';
-import 'package:http/http.dart' as http;
+import 'package:modul1/helper/services.dart';
 import 'package:modul1/helper/transition.dart';
 
 class Search extends StatefulWidget {
@@ -16,15 +16,6 @@ class Search extends StatefulWidget {
 class _Search extends State<Search> {
   String query = '';
   TextEditingController _controller = TextEditingController();
-  Future<HeaderList> load() async {
-    final response = await http.get(Uri.parse('https://api.npoint.io/47a5b011dd89156251c5'));
-    if (response.statusCode == 200) {
-      var jsonData = jsonDecode(response.body);
-      return HeaderList.fromJson(jsonData);
-    } else {
-      return load();
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,51 +37,60 @@ class _Search extends State<Search> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              Padding(
-                padding: EdgeInsets.only(top: 12.5),
-                child: TextField(
-                  textInputAction: TextInputAction.done,
-                  autofocus: false,
-                  controller: _controller,
-                  onChanged: (String text) {
-                    setState(() {
-                      query = text.toLowerCase();
-                    });
-                  },
-                  decoration: InputDecoration(
-                    filled: true,
-                    hintText: 'Search video here...',
-                    hintStyle: TextStyle(
-                      fontSize: 18,
-                      color: Colors.grey,
-                    ),
-                    fillColor: Colors.grey[200],
-                    contentPadding: EdgeInsets.symmetric(horizontal: 15, vertical: 1.5),
-                    suffixIcon: IconButton(
-                      icon: Icon( (query.isEmpty) ? Icons.search : Icons.clear),
-                      onPressed: () {
-                        _controller.clear();
-                        setState(() {
-                          query = '';
-                        });
-                      },
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide.none,
+              Container(
+                height: medias.size.height * 0.1,
+                padding: EdgeInsets.only(top: 12.5, bottom: 10),
+                child: Container(
+                  height: 50,
+                  child: TextField(
+                    textInputAction: TextInputAction.done,
+                    autofocus: false,
+                    controller: _controller,
+                    onChanged: (String text) {
+                      setState(() {
+                        query = text.toLowerCase();
+                      });
+                    },
+                    decoration: InputDecoration(
+                      filled: true,
+                      hintText: 'Search video here...',
+                      hintStyle: TextStyle(
+                        fontSize: 18,
+                        color: Colors.grey,
+                      ),
+                      fillColor: Colors.grey[200],
+                      contentPadding: EdgeInsets.symmetric(horizontal: 15, vertical: 1.5),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          (query.isEmpty) ? Icons.search : Icons.clear,
+                          color: Colors.black,
+                        ),
+                        onPressed: () {
+                          _controller.clear();
+                          setState(() {
+                            query = '';
+                          });
+                        },
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide.none,
+                      ),
                     ),
                   ),
                 ),
               ),
 
+              Divider(color: Colors.white70, height: 1.5),
+
               Padding(
                 padding: EdgeInsets.only(top: 15),
                 child: FutureBuilder<HeaderList>(
-                  future: load(),
+                  future: DioClient().getDatas(),
                   builder: (context, snapshot) {
                     HeaderList? init = snapshot.data;
-                    List<User> list = (query.isNotEmpty) ? init!.listSong.where(
-                            (element) => element.artist.contains(query.toLowerCase()) || element.title.contains(query.toLowerCase())
+                    List<Songs> list = (query.isNotEmpty) ? init!.songs.where(
+                            (element) => element.title.toLowerCase().contains(query)
                     ).toList() : [];
 
                     return ListView.builder(
@@ -101,7 +101,7 @@ class _Search extends State<Search> {
                       itemBuilder: (context, index) {
                         return GestureDetector(
                           onTap: () {
-                            Navigator.of(context).push(
+                            Navigator.of(widget.onNext).push(
                                 FadeTransitioned(page: Details(
                                   onNext: widget.onNext,
                                   index: index,
@@ -130,7 +130,7 @@ class _Search extends State<Search> {
                                     ),
                                     child: Image(
                                       fit: BoxFit.cover,
-                                      image: NetworkImage(list[index].image),
+                                      image: NetworkImage(list[index].imageUrl),
                                       height: medias.size.height,
                                       width: medias.size.width,
                                     ),
@@ -166,7 +166,7 @@ class _Search extends State<Search> {
                                           alignment: Alignment.topLeft,
                                           padding: EdgeInsets.only(top: 5, left: 12.5),
                                           child: Text(
-                                            list[index].artist,
+                                            list[index].title,
                                             style: TextStyle(
                                               fontSize: 18,
                                               color: Colors.black,

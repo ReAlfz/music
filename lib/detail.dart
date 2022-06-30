@@ -8,7 +8,7 @@ import 'helper/model.dart';
 
 class Details extends StatefulWidget {
   final onNext, index;
-  final List<User> listOther;
+  final List<Songs> listOther;
   const Details({Key? key, required this.onNext, required this.index, required this.listOther}) : super(key: key);
   _Details createState() => _Details();
 }
@@ -72,7 +72,7 @@ class _Details extends State<Details> {
                   child: Align(
                     alignment: Alignment.center,
                     child: Image(
-                      image: NetworkImage(widget.listOther[widget.index].image),
+                      image: NetworkImage(widget.listOther[widget.index].imageUrl),
                       fit: BoxFit.cover,
                       width: 225,
                       height: 225,
@@ -120,7 +120,7 @@ class _Details extends State<Details> {
                                 child: Align(
                                   alignment: Alignment.topLeft,
                                   child: Text(
-                                    widget.listOther[widget.index].artist,
+                                    widget.listOther[widget.index].title,
                                     style: TextStyle(
                                       color: Colors.grey[300],
                                       letterSpacing: 1,
@@ -314,7 +314,7 @@ class _Details extends State<Details> {
   );
 
   setUpPlayer() async {
-    duration = await _audioPlayer.setUrl(widget.listOther[widget.index].url);
+    duration = await _audioPlayer.setUrl(widget.listOther[widget.index].songsUrl);
     _audioPlayer.playerStateStream.listen((event) {
       final isPlaying = event.playing;
       final state = event.processingState;

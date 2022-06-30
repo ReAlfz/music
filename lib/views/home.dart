@@ -1,11 +1,12 @@
 import 'dart:convert';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:modul1/album.dart';
+import 'package:modul1/album/album.dart';
 import 'package:modul1/detail.dart';
 import 'package:modul1/helper/model.dart';
-import 'package:http/http.dart' as http;
+import 'package:modul1/helper/services.dart';
 import 'package:modul1/helper/transition.dart';
 import 'package:provider/provider.dart';
 
@@ -15,28 +16,13 @@ class Home extends StatefulWidget {
   _Home createState() => _Home();
 }
 
+class ApiPath{
+  static const getPath = "/api/load/songs/";
+}
+
 class _Home extends State<Home> {
   late String name;
-  List<User> temp = [];
-  Future<HeaderList> load() async {
-    final response = await http.get(Uri.parse('https://api.npoint.io/47a5b011dd89156251c5'));
-
-    if (response.statusCode == 200) {
-      try {
-        temp = User.decodeData(await ShareInit().read('list'));
-        return HeaderList.fromJson(jsonDecode(response.body));
-      } catch (e) {
-        print('failed because $e');
-        return HeaderList(
-          update: false,
-          listSong: [],
-          album: [],
-        );
-      }
-    } else {
-      return load();
-    }
-  }
+  List<Songs> temp = [];
 
   @override
   Widget build(BuildContext context) {
@@ -56,13 +42,13 @@ class _Home extends State<Home> {
         ),
         child: SingleChildScrollView(
           child: FutureBuilder<HeaderList>(
-            future: load(),
+            future: DioClient().getDatas(),
             builder: (context, snapshot) {
               switch (snapshot.connectionState) {
                 case ConnectionState.done:
                   if (snapshot.hasData) {
-                    List<Album> _list = snapshot.data!.album;
-                    List<User> listOther = snapshot.data!.listSong;
+                    List<ListArtist> _list = snapshot.data!.artist;
+                    List<Songs> listOther = snapshot.data!.songs;
                     return Consumer<LibraryServices>(
                       builder: (context, services, child) {
                         services.defaultList = temp;
@@ -131,7 +117,7 @@ class _Home extends State<Home> {
                                 padding: EdgeInsets.zero,
                                 scrollDirection: Axis.horizontal,
                                 shrinkWrap: true,
-                                itemCount: 5,
+                                itemCount: _list.length,
                                 itemBuilder: (context, index) {
                                   return AspectRatio(
                                     aspectRatio: 29 / 30,
@@ -139,9 +125,9 @@ class _Home extends State<Home> {
                                       onTap: () => Navigator.of(context).push(
                                         MaterialPageRoute(builder: (_) => SideDetail(
                                           onNext: widget.onNext,
-                                          title: _list[index].title,
-                                          image: _list[index].image,
-                                          list: _list[index].list,
+                                          title: _list[index].name,
+                                          image: _list[index].imageUrl,
+                                          list: _list[index].songs,
                                         )),
                                       ),
 
@@ -162,7 +148,7 @@ class _Home extends State<Home> {
                                                   topLeft: Radius.circular(10),
                                                 ),
                                                 child: Image(
-                                                  image: NetworkImage(_list[index].image),
+                                                  image: NetworkImage(_list[index].imageUrl),
                                                   width: medias.size.width,
                                                   height: medias.size.height,
                                                   fit: BoxFit.cover,
@@ -178,7 +164,7 @@ class _Home extends State<Home> {
                                                 child: Align(
                                                   alignment: Alignment.centerLeft,
                                                   child: Text(
-                                                    _list[index].title,
+                                                    _list[index].name,
                                                     style: TextStyle(
                                                       fontSize: 18,
                                                       letterSpacing: 1,
@@ -207,11 +193,12 @@ class _Home extends State<Home> {
                                 itemBuilder: (context, index) {
                                   return GestureDetector(
                                     onTap: () {
-                                      Navigator.of(context).push(
-                                          FadeTransitioned(page: Details(
-                                            onNext: widget.onNext,
-                                            index: index,
-                                            listOther: listOther,
+                                      Navigator.of(widget.onNext).push(
+                                          FadeTransitioned(
+                                              page: Details(
+                                                onNext: widget.onNext,
+                                                index: index,
+                                                listOther: listOther,
                                           ))
                                       );
                                     },
@@ -236,7 +223,7 @@ class _Home extends State<Home> {
                                               ),
                                               child: Image(
                                                 fit: BoxFit.cover,
-                                                image: NetworkImage(listOther[index].image),
+                                                image: NetworkImage(listOther[index].imageUrl),
                                                 height: medias.size.height,
                                                 width: medias.size.width,
                                               ),
@@ -272,7 +259,7 @@ class _Home extends State<Home> {
                                                     alignment: Alignment.topLeft,
                                                     padding: EdgeInsets.only(top: 5, left: 12.5),
                                                     child: Text(
-                                                      listOther[index].artist,
+                                                      listOther[index].artist.name,
                                                       style: TextStyle(
                                                         fontSize: 18,
                                                         color: Colors.black,
@@ -309,6 +296,7 @@ class _Home extends State<Home> {
                       },
                     );
                   } else {
+                    print(snapshot.data);
                     return Container(
                       width: medias.size.width,
                       height: medias.size.height,

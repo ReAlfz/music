@@ -1,14 +1,14 @@
-import 'dart:math';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:modul1/album/AlbumDetail.dart';
 import 'package:modul1/helper/model.dart';
+import 'package:modul1/helper/transition.dart';
 
 class SideDetail extends StatefulWidget {
-  final List<User> list;
   final String image, title;
+  final List<ArtistSongs> list;
   final onNext;
-  const SideDetail({Key? key, this.onNext, required this.image, required this.list, required this.title}) : super(key: key);
+  const SideDetail({Key? key, this.onNext, required this.list, required this.image, required this.title}) : super(key: key);
 
   _sideDetail createState() => _sideDetail();
 }
@@ -19,7 +19,7 @@ class _sideDetail extends State<SideDetail> {
   @override
   Widget build(BuildContext context) {
     var medias = MediaQuery.of(context);
-    List<User> _list = widget.list;
+    List<ArtistSongs> _list = widget.list;
     return Container(
       width: medias.size.width,
       height: medias.size.height,
@@ -69,7 +69,7 @@ class _sideDetail extends State<SideDetail> {
                                 ),
                                 child: Image(
                                   fit: BoxFit.cover,
-                                  image: NetworkImage(_list[index].image),
+                                  image: NetworkImage(_list[index].imageUrl),
                                   height: medias.size.height,
                                   width: medias.size.width,
                                 ),
@@ -105,7 +105,7 @@ class _sideDetail extends State<SideDetail> {
                                       alignment: Alignment.topLeft,
                                       padding: EdgeInsets.only(top: 5, left: 12.5),
                                       child: Text(
-                                        _list[index].artist,
+                                        widget.title,
                                         style: TextStyle(
                                           fontSize: 18,
                                           color: Colors.black,
@@ -129,17 +129,31 @@ class _sideDetail extends State<SideDetail> {
           Positioned(
             top: getPositionedPlayButton(medias),
             right: 25,
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.green.shade700,
-                shape: BoxShape.circle,
-              ),
-              height: 70,
-              width: 70,
-              child: Icon(
-                Icons.play_arrow,
-                size: 35,
-                color: Colors.black,
+            child: GestureDetector(
+              onTap: () {
+                Navigator.of(widget.onNext).push(
+                    FadeTransitioned(
+                        page: AlbumDetail(
+                          onNext: widget.onNext,
+                          index: 0,
+                          artistName: widget.title,
+                          listOther: _list,
+                        ))
+                );
+              },
+
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.green.shade700,
+                  shape: BoxShape.circle,
+                ),
+                height: 70,
+                width: 70,
+                child: Icon(
+                  Icons.play_arrow,
+                  size: 35,
+                  color: Colors.black,
+                ),
               ),
             ),
           ),
