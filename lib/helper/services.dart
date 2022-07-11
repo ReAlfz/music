@@ -1,60 +1,72 @@
 import 'dart:convert';
 
-import 'package:dio/dio.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:modul1/helper/model.dart';
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
 
-class AuthServices {
-  final FirebaseAuth _firebaseAuth;
-  AuthServices(this._firebaseAuth);
+class LibraryServices extends ChangeNotifier {
+  List<Songs> defaultList = [];
 
-  Future<bool> logIn({required String email, required String password}) async {
-    try {
-      await _firebaseAuth.signInWithEmailAndPassword(email: email, password: password);
-      return true;
-    } on FirebaseException catch (e) {
-      debugPrint(e.message ?? "Unknow error");
-      return false;
+  void updateListener(Songs user, BuildContext context) {
+    if (!defaultList.any((element) => element.title.contains(user.title))) {
+      try {
+        defaultList.add(user);
+        ShareInit().save('list', Songs.encodeData(defaultList));
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            duration: Duration(milliseconds: 700),
+            content: Text(
+              'Music added to your library',
+            ),
+          ),
+        );
+
+        notifyListeners();
+      } catch (e) {
+        print('failed because $e');
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          duration: Duration(milliseconds: 700),
+          content: Text(
+            'Music already added',
+          ),
+        ),
+      );
     }
+    print(defaultList.length);
   }
 
-  Future<bool> signUp({required String email, required String password}) async {
+  void deleteListener(Songs user, BuildContext context) {
     try {
-      await _firebaseAuth.createUserWithEmailAndPassword(email: email, password: password);
-      return true;
-    } on FirebaseException catch (e) {
-      debugPrint(e.message ?? "Unknow error");
-      return false;
+      defaultList.remove(user);
+      ShareInit().save('list', Songs.encodeData(defaultList));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          duration: Duration(milliseconds: 700),
+          content: Text(
+            'Music remove from your library',
+          ),
+        ),
+      );
+      notifyListeners();
+    } catch (e) {
+      print('failed because $e');
     }
   }
 }
 
-class DioClient {
-  final Dio _dio = Dio(
-    BaseOptions(
-      baseUrl: 'http://10.0.2.2:8000',
-      contentType: "application/json",
-      responseType: ResponseType.json,
-    )
-  );
 
-  Future<HeaderList> getDatas() async {
-    Response data = await _dio.get('/api/load/songs');
-    return HeaderList.fromJson(data.data);
+class ApiClient {
+  Future<HeaderList> getData() async {
+    final response = await http.get(Uri.parse('http://10.0.2.2:8000/api/load/songs'));
+
+    if (response.statusCode == 200) {
+      return HeaderList.fromJson(jsonDecode(response.body));
+    } else {
+      return getData();
+    }
   }
-
-  // Future<HeaderList> getDatas() async {
-  //   final response = await http.get(Uri.parse('http://10.0.2.2:8000/api/load/songs'));
-  //
-  //   try {
-  //     return HeaderList.fromJson(jsonDecode(response.body));
-  //   } catch (e) {
-  //     print(e.toString());
-  //     return HeaderList(total: 0, songs: [], artist: []);
-  //   }
-  // }
 }

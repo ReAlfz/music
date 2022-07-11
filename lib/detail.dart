@@ -2,7 +2,9 @@ import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:modul1/helper/services.dart';
 import 'package:modul1/helper/transition.dart';
+import 'package:provider/provider.dart';
 
 import 'helper/model.dart';
 
@@ -24,280 +26,286 @@ class _Details extends State<Details> {
   Widget build(BuildContext context) {
     var media = MediaQuery.of(context);
     return Scaffold(
-      body: Stack(
-        fit: StackFit.expand,
-        children: [
-          Container(
-            width: media.size.width,
-            height: media.size.height,
-            padding: EdgeInsets.fromLTRB(10, media.viewPadding.top, 10, 5),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [Color(0xff96979C), Color(0xff636669), Color(0xff25252D)],
-                  stops: [0.2, 0.5, 0.8]
-              ),
-            ),
-          ),
-
-          Container(
-            color: Colors.black.withOpacity(0.5),
-          ),
-
-          Positioned(
-            top: 27.5,
-            left: 5,
-            child: IconButton(
-              icon: Icon(
-                Icons.arrow_back_ios_new_rounded,
-                size: 30,
-                color: Colors.grey,
-              ),
-              onPressed: () => Navigator.of(context).pop(),
-            ),
-          ),
-
-          Positioned(
-            top: media.size.height * 0.15,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Flexible(
-                  fit: FlexFit.tight,
-                  flex: 4,
-                  child: Align(
-                    alignment: Alignment.center,
-                    child: Image(
-                      image: NetworkImage(widget.listOther[widget.index].imageUrl),
-                      fit: BoxFit.cover,
-                      width: 225,
-                      height: 225,
-                    ),
+      body: Consumer<LibraryServices>(
+        builder: (context, services, child) {
+          return Stack(
+            fit: StackFit.expand,
+            children: [
+              Container(
+                width: media.size.width,
+                height: media.size.height,
+                padding: EdgeInsets.fromLTRB(10, media.viewPadding.top, 10, 5),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [Color(0xff96979C), Color(0xff636669), Color(0xff25252D)],
+                      stops: [0.2, 0.5, 0.8]
                   ),
                 ),
+              ),
 
-                Flexible(
-                  flex: 2,
-                  fit: FlexFit.tight,
-                  child: Padding(
-                    padding: EdgeInsets.only(
-                      top: media.size.height * 0.005,
-                      left: 20,
-                      right: 20
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Flexible(
-                          flex: 5,
-                          fit: FlexFit.tight,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.max,
-                            children: [
-                              Flexible(
-                                flex: 5,
-                                fit: FlexFit.tight,
-                                child: Align(
-                                  alignment: Alignment.bottomLeft,
-                                  child: Text(
-                                    widget.listOther[widget.index].title,
-                                    style: TextStyle(
-                                      color: Colors.grey[300],
-                                      fontSize: 20,
-                                    ),
-                                  ),
-                                ),
-                              ),
+              Container(
+                color: Colors.black.withOpacity(0.5),
+              ),
 
-                              Flexible(
-                                flex: 5,
-                                fit: FlexFit.tight,
-                                child: Align(
-                                  alignment: Alignment.topLeft,
-                                  child: Text(
-                                    widget.listOther[widget.index].title,
-                                    style: TextStyle(
-                                      color: Colors.grey[300],
-                                      letterSpacing: 1,
-                                      fontSize: 20,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-
-                        Flexible(
-                          flex: 5,
-                          fit: FlexFit.tight,
-                          child: Align(
-                            alignment: Alignment.centerRight,
-                            child: IconButton(
-                              icon: Icon(
-                                Icons.favorite_border_outlined,
-                                color: Colors.grey[300],
-                              ),
-                              onPressed: () {},
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+              Positioned(
+                top: 27.5,
+                left: 5,
+                child: IconButton(
+                  icon: Icon(
+                    Icons.arrow_back_ios_new_rounded,
+                    size: 30,
+                    color: Colors.grey,
                   ),
+                  onPressed: () => Navigator.of(context).pop(),
                 ),
+              ),
 
-                Flexible(
-                  flex: 4,
-                  fit: FlexFit.tight,
-                  child: Center(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.max,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Flexible(
-                          flex: 3,
-                          fit: FlexFit.tight,
-                          child: Padding(
-                            padding: EdgeInsets.fromLTRB(20, 7.5, 20, 5),
-                            child: ValueListenableBuilder<DurationState>(
-                              valueListenable: progressNotification,
-                              builder: (x, value, z) {
-                                return ProgressBar(
-                                  barHeight: 3,
-                                  thumbRadius: 7.5,
-                                  thumbColor: Colors.white,
-                                  baseBarColor: Colors.grey[600],
-                                  progressBarColor: Colors.grey[200],
-                                  progress: value.current,
-                                  total: value.total,
-                                  onSeek: seekSong,
-                                  timeLabelTextStyle: TextStyle(
-                                    color: Colors.grey[300],
-                                    fontSize: 15,
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
+              Positioned(
+                top: media.size.height * 0.15,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Flexible(
+                      fit: FlexFit.tight,
+                      flex: 4,
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: Image(
+                          image: NetworkImage(widget.listOther[widget.index].imageUrl),
+                          fit: BoxFit.cover,
+                          width: 225,
+                          height: 225,
                         ),
+                      ),
+                    ),
 
-                        Flexible(
-                          flex: 7,
-                          fit: FlexFit.tight,
-                          child: Padding(
-                            padding: EdgeInsets.fromLTRB(20, 5, 20, 5),
-                            child: Align(
-                              alignment: Alignment.topCenter,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    Flexible(
+                      flex: 2,
+                      fit: FlexFit.tight,
+                      child: Padding(
+                        padding: EdgeInsets.only(
+                            top: media.size.height * 0.005,
+                            left: 20,
+                            right: 20
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Flexible(
+                              flex: 5,
+                              fit: FlexFit.tight,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.max,
                                 children: [
-                                  IconButton(
-                                    icon: Icon(Icons.skip_previous),
-                                    iconSize: 50,
-                                    color: (widget.index > 0) ? Colors.grey[300] : Colors.grey,
-                                    onPressed: (widget.index > 0)
-                                        ? () {
-                                      Navigator.of(context).pushReplacement(
-                                          InstantTransitioned(
-                                            page: Details(
-                                              onNext: widget.onNext,
-                                              index: widget.index + 1,
-                                              listOther: widget.listOther,
-                                            ),
-                                          )
-                                      );
-                                    } : null,
-                                  ),
-
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      color: Colors.grey[300],
-                                      shape: BoxShape.circle,
-                                    ),
-                                    height: 75,
-                                    width: 75,
-                                    child: FittedBox(
-                                      child: ValueListenableBuilder(
-                                        valueListenable: buttonNotification,
-                                        builder: (x, value, z) {
-                                          switch (value) {
-                                            case ButtonState.paused:
-                                              return IconButton(
-                                                onPressed: () {
-                                                  _audioPlayer.play();
-                                                },
-                                                icon: Icon(
-                                                  Icons.play_arrow,
-                                                  size: 30,
-                                                  color: Colors.black,
-                                                ),
-                                              );
-
-                                            case ButtonState.playing:
-                                              return IconButton(
-                                                onPressed: () {
-                                                  _audioPlayer.pause();
-                                                },
-                                                icon: Icon(
-                                                  Icons.pause,
-                                                  size: 30,
-                                                  color: Colors.black,
-                                                ),
-                                              );
-
-                                            default:
-                                              return IconButton(
-                                                onPressed: () {
-                                                  _audioPlayer.play();
-                                                },
-                                                icon: Icon(
-                                                  Icons.play_arrow,
-                                                  size: 30,
-                                                  color: Colors.black,
-                                                ),
-                                              );
-                                          }
-                                        },
+                                  Flexible(
+                                    flex: 5,
+                                    fit: FlexFit.tight,
+                                    child: Align(
+                                      alignment: Alignment.bottomLeft,
+                                      child: Text(
+                                        widget.listOther[widget.index].title,
+                                        style: TextStyle(
+                                          color: Colors.grey[300],
+                                          fontSize: 20,
+                                        ),
                                       ),
                                     ),
                                   ),
 
-                                  IconButton(
-                                    icon: Icon(Icons.skip_next),
-                                    iconSize: 50,
-                                    color: (widget.index < widget.listOther.length -1) ? Colors.grey[300] : Colors.grey,
-                                    onPressed: (widget.index < widget.listOther.length - 1)
-                                        ? () {
-                                      Navigator.of(context).pushReplacement(
-                                          InstantTransitioned(
-                                            page: Details(
-                                              onNext: widget.onNext,
-                                              index: widget.index + 1,
-                                              listOther: widget.listOther,
-                                            ),
-                                          )
-                                      );
-                                    } : null,
-                                  )
+                                  Flexible(
+                                    flex: 5,
+                                    fit: FlexFit.tight,
+                                    child: Align(
+                                      alignment: Alignment.topLeft,
+                                      child: Text(
+                                        widget.listOther[widget.index].title,
+                                        style: TextStyle(
+                                          color: Colors.grey[300],
+                                          letterSpacing: 1,
+                                          fontSize: 20,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
                                 ],
                               ),
                             ),
-                          ),
+
+                            Flexible(
+                              flex: 5,
+                              fit: FlexFit.tight,
+                              child: Align(
+                                alignment: Alignment.centerRight,
+                                child: IconButton(
+                                  icon: Icon(
+                                    Icons.favorite_border_outlined,
+                                    color: Colors.grey[300],
+                                  ),
+                                  onPressed: () {
+                                    services.updateListener(widget.listOther[widget.index], context);
+                                  },
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
+                      ),
                     ),
-                  ),
+
+                    Flexible(
+                      flex: 4,
+                      fit: FlexFit.tight,
+                      child: Center(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.max,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Flexible(
+                              flex: 3,
+                              fit: FlexFit.tight,
+                              child: Padding(
+                                padding: EdgeInsets.fromLTRB(20, 7.5, 20, 5),
+                                child: ValueListenableBuilder<DurationState>(
+                                  valueListenable: progressNotification,
+                                  builder: (x, value, z) {
+                                    return ProgressBar(
+                                      barHeight: 3,
+                                      thumbRadius: 7.5,
+                                      thumbColor: Colors.white,
+                                      baseBarColor: Colors.grey[600],
+                                      progressBarColor: Colors.grey[200],
+                                      progress: value.current,
+                                      total: value.total,
+                                      onSeek: seekSong,
+                                      timeLabelTextStyle: TextStyle(
+                                        color: Colors.grey[300],
+                                        fontSize: 15,
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                            ),
+
+                            Flexible(
+                              flex: 7,
+                              fit: FlexFit.tight,
+                              child: Padding(
+                                padding: EdgeInsets.fromLTRB(20, 5, 20, 5),
+                                child: Align(
+                                  alignment: Alignment.topCenter,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                    children: [
+                                      IconButton(
+                                        icon: Icon(Icons.skip_previous),
+                                        iconSize: 50,
+                                        color: (widget.index > 0) ? Colors.grey[300] : Colors.grey,
+                                        onPressed: (widget.index > 0)
+                                            ? () {
+                                          Navigator.of(context).pushReplacement(
+                                              InstantTransitioned(
+                                                page: Details(
+                                                  onNext: widget.onNext,
+                                                  index: widget.index + 1,
+                                                  listOther: widget.listOther,
+                                                ),
+                                              )
+                                          );
+                                        } : null,
+                                      ),
+
+                                      Container(
+                                        decoration: BoxDecoration(
+                                          color: Colors.grey[300],
+                                          shape: BoxShape.circle,
+                                        ),
+                                        height: 75,
+                                        width: 75,
+                                        child: FittedBox(
+                                          child: ValueListenableBuilder(
+                                            valueListenable: buttonNotification,
+                                            builder: (x, value, z) {
+                                              switch (value) {
+                                                case ButtonState.paused:
+                                                  return IconButton(
+                                                    onPressed: () {
+                                                      _audioPlayer.play();
+                                                    },
+                                                    icon: Icon(
+                                                      Icons.play_arrow,
+                                                      size: 30,
+                                                      color: Colors.black,
+                                                    ),
+                                                  );
+
+                                                case ButtonState.playing:
+                                                  return IconButton(
+                                                    onPressed: () {
+                                                      _audioPlayer.pause();
+                                                    },
+                                                    icon: Icon(
+                                                      Icons.pause,
+                                                      size: 30,
+                                                      color: Colors.black,
+                                                    ),
+                                                  );
+
+                                                default:
+                                                  return IconButton(
+                                                    onPressed: () {
+                                                      _audioPlayer.play();
+                                                    },
+                                                    icon: Icon(
+                                                      Icons.play_arrow,
+                                                      size: 30,
+                                                      color: Colors.black,
+                                                    ),
+                                                  );
+                                              }
+                                            },
+                                          ),
+                                        ),
+                                      ),
+
+                                      IconButton(
+                                        icon: Icon(Icons.skip_next),
+                                        iconSize: 50,
+                                        color: (widget.index < widget.listOther.length -1) ? Colors.grey[300] : Colors.grey,
+                                        onPressed: (widget.index < widget.listOther.length - 1)
+                                            ? () {
+                                          Navigator.of(context).pushReplacement(
+                                              InstantTransitioned(
+                                                page: Details(
+                                                  onNext: widget.onNext,
+                                                  index: widget.index + 1,
+                                                  listOther: widget.listOther,
+                                                ),
+                                              )
+                                          );
+                                        } : null,
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          ),
-        ],
+              ),
+            ],
+          );
+        },
       )
     );
   }

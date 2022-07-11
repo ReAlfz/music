@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:modul1/album/AlbumDetail.dart';
 import 'package:modul1/helper/model.dart';

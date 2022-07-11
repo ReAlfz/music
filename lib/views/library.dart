@@ -1,9 +1,7 @@
-import 'dart:convert';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:modul1/detail.dart';
 import 'package:modul1/helper/model.dart';
+import 'package:modul1/helper/services.dart';
 import 'package:modul1/helper/transition.dart';
 import 'package:provider/provider.dart';
 

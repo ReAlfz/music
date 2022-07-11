@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:modul1/detail.dart';
@@ -86,7 +84,7 @@ class _Search extends State<Search> {
               Padding(
                 padding: EdgeInsets.only(top: 15),
                 child: FutureBuilder<HeaderList>(
-                  future: DioClient().getDatas(),
+                  future: ApiClient().getData(),
                   builder: (context, snapshot) {
                     HeaderList? init = snapshot.data;
                     List<Songs> list = (query.isNotEmpty) ? init!.songs.where(

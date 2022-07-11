@@ -1,6 +1,3 @@
-import 'dart:convert';
-
-import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:modul1/album/album.dart';
@@ -42,13 +39,14 @@ class _Home extends State<Home> {
         ),
         child: SingleChildScrollView(
           child: FutureBuilder<HeaderList>(
-            future: DioClient().getDatas(),
+            future: ApiClient().getData(),
             builder: (context, snapshot) {
               switch (snapshot.connectionState) {
                 case ConnectionState.done:
                   if (snapshot.hasData) {
                     List<ListArtist> _list = snapshot.data!.artist;
                     List<Songs> listOther = snapshot.data!.songs;
+                    bool favorite = false;
                     return Consumer<LibraryServices>(
                       builder: (context, services, child) {
                         services.defaultList = temp;

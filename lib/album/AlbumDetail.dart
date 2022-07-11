@@ -1,5 +1,4 @@
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:modul1/helper/model.dart';
@@ -23,7 +22,7 @@ class _Details extends State<AlbumDetail> {
   Widget build(BuildContext context) {
     var media = MediaQuery.of(context);
     return Scaffold(
-        body: Stack(
+      body: Stack(
           fit: StackFit.expand,
           children: [
             Container(
@@ -129,21 +128,6 @@ class _Details extends State<AlbumDetail> {
                                   ),
                                 ),
                               ],
-                            ),
-                          ),
-
-                          Flexible(
-                            flex: 5,
-                            fit: FlexFit.tight,
-                            child: Align(
-                              alignment: Alignment.centerRight,
-                              child: IconButton(
-                                icon: Icon(
-                                  Icons.favorite_border_outlined,
-                                  color: Colors.grey[300],
-                                ),
-                                onPressed: () {},
-                              ),
                             ),
                           ),
                         ],
@@ -299,7 +283,7 @@ class _Details extends State<AlbumDetail> {
               ),
             ),
           ],
-        )
+        ),
     );
   }
 

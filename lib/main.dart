@@ -1,11 +1,5 @@
-import 'dart:convert';
-
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:modul1/helper/model.dart';
-import 'package:modul1/views/account.dart';
+import 'package:modul1/helper/services.dart';
 import 'package:modul1/views/home.dart';
 import 'package:modul1/views/library.dart';
 import 'package:modul1/views/search.dart';
@@ -50,7 +44,6 @@ class _MyHomePageState extends State<MyHomePage> {
   List<GlobalKey<NavigatorState>> _navigatorKeys = [
     GlobalKey<NavigatorState>(),
     GlobalKey<NavigatorState>(),
-    GlobalKey<NavigatorState>(),
     GlobalKey<NavigatorState>()
   ];
 
@@ -72,7 +65,6 @@ class _MyHomePageState extends State<MyHomePage> {
               createBody(0),
               createBody(1),
               createBody(2),
-              createBody(3),
             ],
           )
         ),
@@ -82,7 +74,7 @@ class _MyHomePageState extends State<MyHomePage> {
           child: Container(
             height: medias.size.height * 0.085,
             color: Colors.black.withOpacity(0.9),
-            padding: EdgeInsets.symmetric(horizontal: 30),
+            padding: EdgeInsets.symmetric(horizontal: medias.size.width * 0.15),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -112,15 +104,6 @@ class _MyHomePageState extends State<MyHomePage> {
                     color: (currentIndex == 2) ? Colors.white : Colors.grey,
                   ),
                 ),
-
-                IconButton(
-                  onPressed: () => changeIndex(3),
-                  icon: Icon(
-                    Icons.person,
-                    size: 22.5,
-                    color: (currentIndex == 3) ? Colors.white : Colors.grey,
-                  ),
-                ),
               ],
             ),
           ),
@@ -145,12 +128,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
             case 2:
               page = Library(
-                onNext: context,
-              );
-              break;
-
-            case 3:
-              page = Account(
                 onNext: context,
               );
               break;
