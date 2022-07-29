@@ -10,7 +10,7 @@ import 'helper/model.dart';
 
 class Details extends StatefulWidget {
   final onNext, index;
-  final List<Songs> listOther;
+  final List<Song> listOther;
   const Details({Key? key, required this.onNext, required this.index, required this.listOther}) : super(key: key);
   _Details createState() => _Details();
 }
@@ -76,7 +76,7 @@ class _Details extends State<Details> {
                       child: Align(
                         alignment: Alignment.center,
                         child: Image(
-                          image: NetworkImage(widget.listOther[widget.index].imageUrl),
+                          image: NetworkImage(widget.listOther[widget.index].image),
                           fit: BoxFit.cover,
                           width: 225,
                           height: 225,
@@ -97,7 +97,7 @@ class _Details extends State<Details> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Flexible(
-                              flex: 5,
+                              flex: 8,
                               fit: FlexFit.tight,
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -124,7 +124,7 @@ class _Details extends State<Details> {
                                     child: Align(
                                       alignment: Alignment.topLeft,
                                       child: Text(
-                                        widget.listOther[widget.index].title,
+                                        widget.listOther[widget.index].artist,
                                         style: TextStyle(
                                           color: Colors.grey[300],
                                           letterSpacing: 1,
@@ -138,19 +138,30 @@ class _Details extends State<Details> {
                             ),
 
                             Flexible(
-                              flex: 5,
+                              flex: 1,
                               fit: FlexFit.tight,
-                              child: Align(
-                                alignment: Alignment.centerRight,
-                                child: IconButton(
-                                  icon: Icon(
-                                    Icons.favorite_border_outlined,
-                                    color: Colors.grey[300],
-                                  ),
-                                  onPressed: () {
-                                    services.updateListener(widget.listOther[widget.index], context);
-                                  },
+                              child: IconButton(
+                                icon: Icon(
+                                  Icons.music_note_rounded,
+                                  color: Colors.grey[300],
                                 ),
+                                onPressed: () {
+
+                                },
+                              ),
+                            ),
+
+                            Flexible(
+                              flex: 1,
+                              fit: FlexFit.tight,
+                              child: IconButton(
+                                icon: Icon(
+                                  Icons.favorite_border_outlined,
+                                  color: Colors.grey[300],
+                                ),
+                                onPressed: () {
+                                  services.updateListener(widget.listOther[widget.index], context);
+                                },
                               ),
                             ),
                           ],
@@ -322,7 +333,7 @@ class _Details extends State<Details> {
   );
 
   setUpPlayer() async {
-    duration = await _audioPlayer.setUrl(widget.listOther[widget.index].songsUrl);
+    duration = await _audioPlayer.setUrl(widget.listOther[widget.index].url);
     _audioPlayer.playerStateStream.listen((event) {
       final isPlaying = event.playing;
       final state = event.processingState;

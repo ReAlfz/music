@@ -1,6 +1,5 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:modul1/album/album.dart';
+import 'package:modul1/album.dart';
 import 'package:modul1/detail.dart';
 import 'package:modul1/helper/model.dart';
 import 'package:modul1/helper/services.dart';
@@ -19,7 +18,7 @@ class ApiPath{
 
 class _Home extends State<Home> {
   late String name;
-  List<Songs> temp = [];
+  List<Song> temp = [];
 
   @override
   Widget build(BuildContext context) {
@@ -44,9 +43,8 @@ class _Home extends State<Home> {
               switch (snapshot.connectionState) {
                 case ConnectionState.done:
                   if (snapshot.hasData) {
-                    List<ListArtist> _list = snapshot.data!.artist;
-                    List<Songs> listOther = snapshot.data!.songs;
-                    bool favorite = false;
+                    List<Album> _list = snapshot.data!.albums;
+                    List<Song> listOther = snapshot.data!.songs;
                     return Consumer<LibraryServices>(
                       builder: (context, services, child) {
                         services.defaultList = temp;
@@ -123,9 +121,9 @@ class _Home extends State<Home> {
                                       onTap: () => Navigator.of(context).push(
                                         MaterialPageRoute(builder: (_) => SideDetail(
                                           onNext: widget.onNext,
-                                          title: _list[index].name,
-                                          image: _list[index].imageUrl,
-                                          list: _list[index].songs,
+                                          title: _list[index].title,
+                                          image: _list[index].image,
+                                          list: _list[index].list,
                                         )),
                                       ),
 
@@ -146,7 +144,7 @@ class _Home extends State<Home> {
                                                   topLeft: Radius.circular(10),
                                                 ),
                                                 child: Image(
-                                                  image: NetworkImage(_list[index].imageUrl),
+                                                  image: NetworkImage(_list[index].image),
                                                   width: medias.size.width,
                                                   height: medias.size.height,
                                                   fit: BoxFit.cover,
@@ -162,7 +160,7 @@ class _Home extends State<Home> {
                                                 child: Align(
                                                   alignment: Alignment.centerLeft,
                                                   child: Text(
-                                                    _list[index].name,
+                                                    _list[index].title,
                                                     style: TextStyle(
                                                       fontSize: 18,
                                                       letterSpacing: 1,
@@ -221,7 +219,7 @@ class _Home extends State<Home> {
                                               ),
                                               child: Image(
                                                 fit: BoxFit.cover,
-                                                image: NetworkImage(listOther[index].imageUrl),
+                                                image: NetworkImage(listOther[index].image),
                                                 height: medias.size.height,
                                                 width: medias.size.width,
                                               ),
@@ -257,7 +255,7 @@ class _Home extends State<Home> {
                                                     alignment: Alignment.topLeft,
                                                     padding: EdgeInsets.only(top: 5, left: 12.5),
                                                     child: Text(
-                                                      listOther[index].artist.name,
+                                                      listOther[index].artist,
                                                       style: TextStyle(
                                                         fontSize: 18,
                                                         color: Colors.black,

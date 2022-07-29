@@ -5,13 +5,13 @@ import 'package:modul1/helper/model.dart';
 import 'package:http/http.dart' as http;
 
 class LibraryServices extends ChangeNotifier {
-  List<Songs> defaultList = [];
+  List<Song> defaultList = [];
 
-  void updateListener(Songs user, BuildContext context) {
+  void updateListener(Song user, BuildContext context) {
     if (!defaultList.any((element) => element.title.contains(user.title))) {
       try {
         defaultList.add(user);
-        ShareInit().save('list', Songs.encodeData(defaultList));
+        ShareInit().save('list', Song.encodeData(defaultList));
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -39,10 +39,10 @@ class LibraryServices extends ChangeNotifier {
     print(defaultList.length);
   }
 
-  void deleteListener(Songs user, BuildContext context) {
+  void deleteListener(Song user, BuildContext context) {
     try {
       defaultList.remove(user);
-      ShareInit().save('list', Songs.encodeData(defaultList));
+      ShareInit().save('list', Song.encodeData(defaultList));
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           duration: Duration(milliseconds: 700),
@@ -61,7 +61,7 @@ class LibraryServices extends ChangeNotifier {
 
 class ApiClient {
   Future<HeaderList> getData() async {
-    final response = await http.get(Uri.parse('http://10.0.2.2:8000/api/load/songs'));
+    final response = await http.get(Uri.parse('https://api.npoint.io/47a5b011dd89156251c5'));
 
     if (response.statusCode == 200) {
       return HeaderList.fromJson(jsonDecode(response.body));
@@ -69,4 +69,10 @@ class ApiClient {
       return getData();
     }
   }
+
+  // Future<Init> loading() async {
+  //   final response = await http.get(
+  //       Uri.parse(utf8.decode(base64Url.decode('aHR0cHM6Ly9hcGkubnBvaW50LmlvLzMwMDcxNjU1OThlOGEyMDdiYzNh')))
+  //   );
+  // }
 }

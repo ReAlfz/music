@@ -36,7 +36,7 @@ class _Library extends State<Library> {
         child: SingleChildScrollView(
           child: Consumer<LibraryServices>(
             builder: (context, services, child) {
-              List<Songs> _list = (query.isEmpty)
+              List<Song> _list = (query.isEmpty)
                   ? services.defaultList
                   : services.defaultList.where(
                       (element) => element.title.toLowerCase().contains(query)
@@ -189,7 +189,7 @@ class _Library extends State<Library> {
                                     ),
                                     child: Image(
                                       fit: BoxFit.cover,
-                                      image: NetworkImage(_list[index].imageUrl),
+                                      image: NetworkImage(_list[index].image),
                                       height: medias.size.height,
                                       width: medias.size.width,
                                     ),
@@ -225,7 +225,7 @@ class _Library extends State<Library> {
                                           alignment: Alignment.topLeft,
                                           padding: EdgeInsets.only(top: 5, left: 12.5),
                                           child: Text(
-                                            _list[index].title,
+                                            _list[index].artist,
                                             style: TextStyle(
                                               fontSize: 18,
                                               color: Colors.black,

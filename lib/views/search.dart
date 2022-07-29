@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:modul1/detail.dart';
 import 'package:modul1/helper/model.dart';
@@ -87,7 +86,7 @@ class _Search extends State<Search> {
                   future: ApiClient().getData(),
                   builder: (context, snapshot) {
                     HeaderList? init = snapshot.data;
-                    List<Songs> list = (query.isNotEmpty) ? init!.songs.where(
+                    List<Song> list = (query.isNotEmpty) ? init!.songs.where(
                             (element) => element.title.toLowerCase().contains(query)
                     ).toList() : [];
 
@@ -128,7 +127,7 @@ class _Search extends State<Search> {
                                     ),
                                     child: Image(
                                       fit: BoxFit.cover,
-                                      image: NetworkImage(list[index].imageUrl),
+                                      image: NetworkImage(list[index].image),
                                       height: medias.size.height,
                                       width: medias.size.width,
                                     ),
@@ -164,7 +163,7 @@ class _Search extends State<Search> {
                                           alignment: Alignment.topLeft,
                                           padding: EdgeInsets.only(top: 5, left: 12.5),
                                           child: Text(
-                                            list[index].title,
+                                            list[index].artist,
                                             style: TextStyle(
                                               fontSize: 18,
                                               color: Colors.black,

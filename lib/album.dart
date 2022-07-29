@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:modul1/album/AlbumDetail.dart';
+import 'package:modul1/detail.dart';
 import 'package:modul1/helper/model.dart';
 import 'package:modul1/helper/transition.dart';
 
 class SideDetail extends StatefulWidget {
   final String image, title;
-  final List<ArtistSongs> list;
+  final List<Song> list;
   final onNext;
   const SideDetail({Key? key, this.onNext, required this.list, required this.image, required this.title}) : super(key: key);
 
@@ -18,7 +18,7 @@ class _sideDetail extends State<SideDetail> {
   @override
   Widget build(BuildContext context) {
     var medias = MediaQuery.of(context);
-    List<ArtistSongs> _list = widget.list;
+    List<Song> _list = widget.list;
     return Container(
       width: medias.size.width,
       height: medias.size.height,
@@ -68,7 +68,7 @@ class _sideDetail extends State<SideDetail> {
                                 ),
                                 child: Image(
                                   fit: BoxFit.cover,
-                                  image: NetworkImage(_list[index].imageUrl),
+                                  image: NetworkImage(_list[index].image),
                                   height: medias.size.height,
                                   width: medias.size.width,
                                 ),
@@ -131,13 +131,13 @@ class _sideDetail extends State<SideDetail> {
             child: GestureDetector(
               onTap: () {
                 Navigator.of(widget.onNext).push(
-                    FadeTransitioned(
-                        page: AlbumDetail(
-                          onNext: widget.onNext,
-                          index: 0,
-                          artistName: widget.title,
-                          listOther: _list,
-                        ))
+                  FadeTransitioned(
+                    page: Details(
+                      onNext: widget.onNext,
+                      index: 0,
+                      listOther: widget.list,
+                    ),
+                  ),
                 );
               },
 

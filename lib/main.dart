@@ -58,15 +58,15 @@ class _MyHomePageState extends State<MyHomePage> {
 
       child: Scaffold(
         body: Container(
-          height: medias.size.height,
-          width: medias.size.width,
-          child: Stack(
-            children: [
-              createBody(0),
-              createBody(1),
-              createBody(2),
-            ],
-          )
+            height: medias.size.height,
+            width: medias.size.width,
+            child: Stack(
+              children: [
+                createBody(0),
+                createBody(1),
+                createBody(2),
+              ],
+            )
         ),
 
         bottomNavigationBar: BottomAppBar(
